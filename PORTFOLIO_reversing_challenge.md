@@ -323,5 +323,5 @@ dumpbin /imports challenge.exe | findstr /i strcmp
 
 ---
 
-> **소스 및 산출물:** <span class="todo">GitHub 레포 주소 기입</span>
+> **소스 및 산출물:** [github.com/jdh3210/reversing-challenge-audit](https://github.com/jdh3210/reversing-challenge-audit)
 > v1 원본 · v2 수정본 · 빌드 스크립트 · 검증 스크립트 · 결함 감사 문서(AUDIT) 포함.
