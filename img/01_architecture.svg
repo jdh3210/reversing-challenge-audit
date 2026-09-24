@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 660" role="img"
+     aria-label="TLS 콜백이 main보다 먼저 실행되어 세 가지 재료로 XOR 키를 만들고 셸코드를 복호화한다. Reflective Loader가 그 DLL을 메모리에 매핑하고, DLL의 hook_IAT가 EXE의 import table에서 strcmp 슬롯을 my_strcmp 주소로 덮어쓴다. 이후 main의 strcmp 호출은 DLL 내부의 my_strcmp로 리다이렉트된다."
+     style="max-width:100%;height:auto"
+     font-family="'Malgun Gothic','Apple SD Gothic Neo','Noto Sans KR',sans-serif">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="currentColor" fill-opacity=".55"/>
+    </marker>
+    <marker id="ara" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#b0662a"/>
+    </marker>
+  </defs>
+
+  <!-- 실행 단계 구분 -->
+  <g stroke="currentColor" stroke-opacity=".28" stroke-width="1.4" stroke-dasharray="3 4">
+    <line x1="16" y1="24" x2="16" y2="492"/>
+    <line x1="16" y1="540" x2="16" y2="628"/>
+  </g>
+  <g fill="currentColor" fill-opacity=".5" font-size="10.5" text-anchor="middle">
+    <text transform="rotate(-90 9 258)" x="9" y="258">main() 실행 이전</text>
+    <text transform="rotate(-90 9 584)" x="9" y="584">main() 실행 중</text>
+  </g>
+
+  <!-- 프로세스 시작 -->
+  <rect x="320" y="24" width="200" height="34" rx="17"
+        fill="currentColor" fill-opacity=".04" stroke="currentColor" stroke-opacity=".38"/>
+  <text x="420" y="46" text-anchor="middle" font-size="12.5" fill="currentColor">프로세스 시작</text>
+
+  <line x1="420" y1="58" x2="420" y2="76" stroke="currentColor" stroke-opacity=".5"
+        stroke-width="1.6" marker-end="url(#ar)"/>
+
+  <!-- TLS Callback -->
+  <rect x="200" y="80" width="440" height="172" rx="8"
+        fill="currentColor" fill-opacity=".035" stroke="currentColor" stroke-opacity=".38"/>
+  <text x="218" y="104" font-size="13" font-weight="700" fill="currentColor">TLS Callback<tspan
+        font-size="11" font-weight="400" fill-opacity=".6">  ( .CRT$XLB )</tspan></text>
+  <g font-size="11.5" fill="currentColor" fill-opacity=".78">
+    <text x="232" y="132">PEB.BeingDebugged</text><text x="404" y="132">→  key1</text>
+    <text x="232" y="152">shellcode_len</text><text x="404" y="152">→  key2</text>
+    <text x="232" y="172">팀명 바이트 합</text><text x="404" y="172">→  key3</text>
+  </g>
+  <text x="232" y="196" font-size="11.5" font-weight="700" fill="currentColor">final_key = key1 ^ key2 ^ key3</text>
+  <line x1="218" y1="210" x2="622" y2="210" stroke="currentColor" stroke-opacity=".18"/>
+  <text x="232" y="234" font-size="11.5" fill="currentColor" fill-opacity=".78">shellcode[] in-place 복호화  ( VirtualProtect → RWX )</text>
+
+  <line x1="420" y1="252" x2="420" y2="288" stroke="currentColor" stroke-opacity=".5"
+        stroke-width="1.6" marker-end="url(#ar)"/>
+  <text x="432" y="274" font-size="10.5" fill="currentColor" fill-opacity=".6">복호화된 DLL 이미지</text>
+
+  <!-- Reflective Loader -->
+  <rect x="200" y="290" width="440" height="112" rx="8"
+        fill="currentColor" fill-opacity=".035" stroke="currentColor" stroke-opacity=".38"/>
+  <text x="218" y="314" font-size="13" font-weight="700" fill="currentColor">ReflectiveLoader<tspan
+        font-size="11" font-weight="400" fill-opacity=".6">   디스크를 거치지 않는다</tspan></text>
+  <g font-size="11.5" fill="currentColor" fill-opacity=".78">
+    <text x="232" y="340">PEB_LDR_DATA 순회 → kernel32 베이스</text>
+    <text x="232" y="360">export 파싱 → LoadLibraryA · GetProcAddress · VirtualAlloc</text>
+    <text x="232" y="380">섹션 매핑 · IAT 재구성 · DIR64 재배치</text>
+  </g>
+
+  <line x1="420" y1="402" x2="420" y2="438" stroke="currentColor" stroke-opacity=".5"
+        stroke-width="1.6" marker-end="url(#ar)"/>
+  <text x="432" y="424" font-size="10.5" fill="currentColor" fill-opacity=".6">DllMain 호출</text>
+
+  <!-- hook_IAT -->
+  <rect x="200" y="440" width="440" height="52" rx="8"
+        fill="currentColor" fill-opacity=".035" stroke="currentColor" stroke-opacity=".38"/>
+  <text x="420" y="472" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">DllMain  →  hook_IAT()</text>
+
+  <!-- 핵심: DLL 이 EXE 의 IAT 를 덮어쓴다 -->
+  <line x1="420" y1="492" x2="420" y2="552" stroke="#b0662a" stroke-width="2.2" marker-end="url(#ara)"/>
+  <text x="434" y="520" font-size="11" font-weight="700" fill="#b0662a">strcmp 슬롯을 my_strcmp 주소로 덮어쓴다</text>
+
+  <!-- 하단 실행 경로 -->
+  <g fill="currentColor" fill-opacity=".035" stroke="currentColor" stroke-opacity=".38">
+    <rect x="40" y="556" width="190" height="58" rx="8"/>
+    <rect x="610" y="556" width="190" height="58" rx="8"/>
+  </g>
+  <rect x="325" y="556" width="190" height="58" rx="8"
+        fill="#b0662a" fill-opacity=".07" stroke="#b0662a" stroke-opacity=".75" stroke-width="1.6"/>
+
+  <g text-anchor="middle" fill="currentColor">
+    <text x="135" y="581" font-size="12.5" font-weight="700">main()</text>
+    <text x="135" y="600" font-size="10.5" fill-opacity=".65">scanf → strcmp(input, …)</text>
+    <text x="420" y="581" font-size="12.5" font-weight="700" fill="#b0662a">EXE Import Table</text>
+    <text x="420" y="600" font-size="10.5" fill-opacity=".65">strcmp 슬롯</text>
+    <text x="705" y="581" font-size="12.5" font-weight="700">my_strcmp</text>
+    <text x="705" y="600" font-size="10.5" fill-opacity=".65">DLL 내부 · 메모리에만 존재</text>
+  </g>
+
+  <g stroke="currentColor" stroke-opacity=".5" stroke-width="1.6">
+    <line x1="230" y1="585" x2="323" y2="585" marker-end="url(#ar)"/>
+    <line x1="515" y1="585" x2="608" y2="585" marker-end="url(#ar)"/>
+  </g>
+  <g font-size="10.5" fill="currentColor" fill-opacity=".6" text-anchor="middle">
+    <text x="276" y="574">호출</text>
+    <text x="561" y="574">리다이렉트</text>
+  </g>
+</svg>
